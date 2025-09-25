@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Stealer</title>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Mini Stealer">
+    <meta property="og:description" content="Play a NYT Mini-style crossword puzzle and share your time!">
+    <meta property="og:image" content="cover.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Mini Stealer">
+    <meta property="twitter:description" content="Play a NYT Mini-style crossword puzzle and share your time!">
+    <meta property="twitter:image" content="cover.png">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" id="game-container">
+        <header>
+            <h1>Mini Stealer</h1>
+            <div class="timer" id="timer">0:00</div>
+        </header>
+
+        <div class="game-container">
+            <div class="crossword-wrapper">
+                <div class="crossword-grid" id="grid">
+                    <!-- Grid cells will be generated dynamically -->
+                </div>
+            </div>
+
+            <div class="clues-container">
+                <div class="clues-section">
+                    <h2>Across</h2>
+                    <div class="clues" id="across-clues">
+                        <!-- Across clues will be generated dynamically -->
+                    </div>
+                </div>
+
+                <div class="clues-section">
+                    <h2>Down</h2>
+                    <div class="clues" id="down-clues">
+                        <!-- Down clues will be generated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="check-btn">Check</button>
+            <button id="reveal-btn">Reveal</button>
+            <button id="clear-btn">Clear</button>
+        </div>
+    </div>
+
+    <!-- Start Modal -->
+    <div class="modal show" id="start-modal">
+        <div class="modal-content">
+            <h2>Mini Stealer</h2>
+            <p>Ready to play?</p>
+            <button id="start-timer-btn">Start Timer</button>
+        </div>
+    </div>
+
+    <!-- Completion Modal -->
+    <div class="modal" id="completion-modal">
+        <div class="modal-content">
+            <h2>Congratulations</h2>
+            <p>You solved the puzzle in <span id="final-time"></span>!</p>
+            <textarea id="share-text" rows="3" style="width: 100%; margin: 16px 0; padding: 12px; font-family: Georgia, serif; font-size: 14px; resize: none; border: 1px solid #ccc; border-radius: 6px; background: #fff; line-height: 1.5;"></textarea>
+            <button id="share-btn">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script src="crossword-data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

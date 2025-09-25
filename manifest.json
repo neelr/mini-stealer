@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Mini Stealer",
+  "version": "1.0.0",
+  "description": "Share NYT Mini crosswords with friends",
+  "permissions": ["activeTab", "clipboardWrite"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.nytimes.com/crosswords/game/mini*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "icons": {
+    "16": "icon16.png"
+  }
+}
