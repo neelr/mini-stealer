@@ -14,11 +14,38 @@ body {
     min-height: 100vh;
     padding: 20px;
     line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.bar-decoration {
+    position: fixed;
+    left: -600px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    transform-origin: center center;
+    width: 1470px;
+    min-width: 1470px;
+    height: auto;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.dude-decoration {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    height: auto;
+    z-index: 0;
+    pointer-events: none;
 }
 
 .container {
     max-width: 900px;
     width: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 header {
@@ -27,11 +54,13 @@ header {
     position: relative;
 }
 
-h1 {
-    font-size: 32px;
-    font-weight: 400;
-    margin-bottom: 12px;
-    letter-spacing: -0.5px;
+.title-logo {
+    height: 200px;
+    width: auto;
+    margin-bottom: 16px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .timer {
@@ -40,6 +69,11 @@ h1 {
     font-weight: 500;
     color: #666;
     letter-spacing: 0.5px;
+    background: #fff;
+    padding: 2px 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 6px 24px rgba(0,0,0,0.08);
+    display: inline-block;
 }
 
 .game-container {
@@ -137,6 +171,10 @@ h1 {
 
 .clues-section {
     flex: 1;
+    background: #fff;
+    padding: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 6px 24px rgba(0,0,0,0.08);
 }
 
 .clues-section h2 {
@@ -160,12 +198,12 @@ h1 {
     line-height: 1.5;
     cursor: pointer;
     padding: 8px 10px;
-    border-radius: 6px;
+    border-radius: 4px;
     transition: background 0.2s ease;
 }
 
 .clue:hover {
-    background: #F5F3EF;
+    background: #F8F6F2;
 }
 
 .clue.selected {
@@ -224,7 +262,9 @@ h1 {
 }
 
 /* Blur background when start modal is open */
-body:has(#start-modal.show) #game-container {
+body:has(#start-modal.show) #game-container,
+body:has(#start-modal.show) .bar-decoration,
+body:has(#start-modal.show) .dude-decoration {
     filter: blur(10px);
     pointer-events: none;
 }
@@ -294,6 +334,13 @@ body:has(#start-modal.show) #game-container {
     75% { transform: translateX(2px); }
 }
 
+/* Hide bar decoration on smaller screens */
+@media (max-width: 720px) {
+    .bar-decoration {
+        display: none;
+    }
+}
+
 /* Tablet styles */
 @media (max-width: 768px) {
     .game-container {
@@ -331,14 +378,22 @@ body:has(#start-modal.show) #game-container {
     }
 }
 
+/* Extra large screens - expand bar decoration */
+@media (min-width: 1600px) {
+    .bar-decoration {
+        width: 100vh;
+        max-width: none;
+    }
+}
+
 /* Mobile styles */
 @media (max-width: 480px) {
     body {
         padding: 10px;
     }
 
-    h1 {
-        font-size: 24px;
+    .title-logo {
+        height: 120px;
     }
 
     .game-container {
