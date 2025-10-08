@@ -6,32 +6,59 @@ console.log('📄 Page ready state:', document.readyState);
 // Function to get the grid state from SVG
 function getGridState() {
   const cells = document.querySelectorAll('.xwd__cell');
+
+  // Sort cells by visual position (y, then x) since DOM order != visual order
+  const sortedCells = Array.from(cells).sort((a, b) => {
+    const rectA = a.querySelector('rect');
+    const rectB = b.querySelector('rect');
+    const yA = parseFloat(rectA.getAttribute('y'));
+    const yB = parseFloat(rectB.getAttribute('y'));
+    const xA = parseFloat(rectA.getAttribute('x'));
+    const xB = parseFloat(rectB.getAttribute('x'));
+
+    if (yA !== yB) return yA - yB;
+    return xA - xB;
+  });
+
+  // Detect grid width by counting unique Y positions in first row
+  const firstRowY = parseFloat(sortedCells[0].querySelector('rect').getAttribute('y'));
+  const gridWidth = sortedCells.filter(cell => {
+    const y = parseFloat(cell.querySelector('rect').getAttribute('y'));
+    return Math.abs(y - firstRowY) < 1; // Same row (within 1px)
+  }).length;
+
   const grid = [];
 
-  cells.forEach((cell, index) => {
+  sortedCells.forEach((cell, index) => {
     const rect = cell.querySelector('rect');
-    const letterTexts = cell.querySelectorAll('text');
     const isBlack = rect?.classList.contains('xwd__cell--block') || false;
 
-    // Get the letter (last text element, excluding hidden ones)
+    // Get the letter and number from the appropriate text elements
     let letter = null;
     let number = null;
 
-    letterTexts.forEach(text => {
-      const textContent = text.textContent || '';
-      // Check if this is a number (usually 1-2 digits at start of cell)
+    // Numbers are in small font text elements (not hidden class)
+    const numberTexts = cell.querySelectorAll('text[font-size="27.67"]');
+    numberTexts.forEach(text => {
+      const textContent = (text.textContent || '').trim();
       if (textContent.length <= 2 && /^\d+$/.test(textContent)) {
         number = parseInt(textContent);
-      } else if (textContent.length === 1 && /^[A-Z]$/.test(textContent)) {
-        // Single uppercase letter
+      }
+    });
+
+    // Letters are in the hidden text elements
+    const hiddenTexts = cell.querySelectorAll('text.xwd__cell--hidden');
+    hiddenTexts.forEach(text => {
+      const textContent = (text.textContent || '').trim();
+      if (textContent.length === 1 && /^[A-Z]$/.test(textContent)) {
         letter = textContent;
       }
     });
 
     grid.push({
       index: index,
-      x: index % 5,  // For 5x5 grid
-      y: Math.floor(index / 5),
+      x: index % gridWidth,
+      y: Math.floor(index / gridWidth),
       isBlack: isBlack,
       letter: letter,
       number: number
@@ -84,13 +111,13 @@ function getClues() {
 }
 
 // Function to trace word from starting position
-function traceWord(grid, startX, startY, direction) {
+function traceWord(grid, startX, startY, direction, gridWidth, gridHeight) {
   let word = '';
   let x = startX;
   let y = startY;
 
-  while (x < 5 && y < 5) {
-    const cellIndex = y * 5 + x;
+  while (x < gridWidth && y < gridHeight) {
+    const cellIndex = y * gridWidth + x;
     const cell = grid[cellIndex];
 
     if (!cell || cell.isBlack) break;
@@ -115,6 +142,10 @@ function convertToOurFormat() {
   const words = [];
   const blackSquares = [];
 
+  // Calculate grid dimensions
+  const gridWidth = Math.max(...grid.map(cell => cell.x)) + 1;
+  const gridHeight = Math.max(...grid.map(cell => cell.y)) + 1;
+
   // Collect black squares
   grid.forEach(cell => {
     if (cell.isBlack) {
@@ -127,7 +158,7 @@ function convertToOurFormat() {
     // Find the cell with this number
     const startCell = grid.find(cell => cell.number === clue.number);
     if (startCell) {
-      const answer = traceWord(grid, startCell.x, startCell.y, 0);
+      const answer = traceWord(grid, startCell.x, startCell.y, 0, gridWidth, gridHeight);
       if (answer) {
         words.push([
           clue.number,
@@ -146,7 +177,7 @@ function convertToOurFormat() {
     // Find the cell with this number
     const startCell = grid.find(cell => cell.number === clue.number);
     if (startCell) {
-      const answer = traceWord(grid, startCell.x, startCell.y, 1);
+      const answer = traceWord(grid, startCell.x, startCell.y, 1, gridWidth, gridHeight);
       if (answer) {
         words.push([
           clue.number,
@@ -161,7 +192,7 @@ function convertToOurFormat() {
   });
 
   return {
-    size: [5, 5],
+    size: [gridWidth, gridHeight],
     words: words,
     black: blackSquares
   };
