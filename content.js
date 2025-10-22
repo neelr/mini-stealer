@@ -37,10 +37,15 @@ function getGridState() {
     let letter = null;
     let number = null;
 
-    // Numbers are in small font text elements (not hidden class)
-    const numberTexts = cell.querySelectorAll('text[font-size="27.67"]');
-    numberTexts.forEach(text => {
+    // Numbers are in small font text elements (any font size)
+    // They are NOT in hidden elements and contain 1-2 digits
+    const allTexts = cell.querySelectorAll('text[data-testid="cell-text"]');
+    allTexts.forEach(text => {
+      // Skip hidden text elements
+      if (text.classList.contains('xwd__cell--hidden')) return;
+
       const textContent = (text.textContent || '').trim();
+      // Look for 1-2 digit numbers
       if (textContent.length <= 2 && /^\d+$/.test(textContent)) {
         number = parseInt(textContent);
       }
@@ -220,6 +225,81 @@ function generateShareLink(puzzleData) {
   return `https://mini.neelr.dev?data=${withDashes}`;
 }
 
+// Function to inject toolbar button
+function injectToolbarButton() {
+  console.log('🔧 Attempting to inject toolbar button...');
+
+  // Check if button already exists
+  if (document.getElementById('mini-stealer-toolbar-button')) {
+    console.log('⚠️ Toolbar button already exists, skipping injection');
+    return;
+  }
+
+  // Find the Rebus button
+  const toolbarButtons = document.querySelectorAll('.xwd__tool--button');
+  let rebusButton = null;
+
+  toolbarButtons.forEach(button => {
+    const buttonText = button.textContent.toLowerCase();
+    if (buttonText.includes('rebus')) {
+      rebusButton = button;
+    }
+  });
+
+  if (!rebusButton) {
+    console.log('❌ Rebus button not found, cannot inject toolbar button');
+    return;
+  }
+
+  // Create toolbar button with same structure as other buttons
+  const toolbarButton = document.createElement('li');
+  toolbarButton.className = 'xwd__tool--button xwd__tool--texty';
+  toolbarButton.id = 'mini-stealer-toolbar-button';
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.setAttribute('aria-label', 'Share');
+  button.textContent = 'Share';
+
+  button.addEventListener('click', () => {
+    console.log('🎯 Toolbar share button clicked!');
+    try {
+      const puzzleData = convertToOurFormat();
+      const shareLink = generateShareLink(puzzleData);
+
+      // Get the time from timer
+      const timerEl = document.querySelector('.timer-count');
+      const timeText = timerEl ? timerEl.textContent : 'unknown time';
+
+      // Create share text
+      const shareText = `I completed the NYT Mini in ${timeText}!\nTry it yourself @ ${shareLink}`;
+
+      // Copy to clipboard
+      navigator.clipboard.writeText(shareText).then(() => {
+        const originalText = button.textContent;
+        button.textContent = '✓ Copied!';
+
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        prompt('Copy this link to share:', shareText);
+      });
+    } catch (error) {
+      console.error('Error generating share link:', error);
+      alert('Error generating share link. Make sure puzzle is complete!');
+    }
+  });
+
+  toolbarButton.appendChild(button);
+
+  // Insert before the Rebus button
+  rebusButton.parentNode.insertBefore(toolbarButton, rebusButton);
+
+  console.log('✅ Toolbar button successfully injected!');
+}
+
 // Function to inject button into completion modal
 function injectShareButton() {
   console.log('🔍 Attempting to inject share button...');
@@ -397,6 +477,14 @@ const observer = new MutationObserver((mutations) => {
       console.log('🔄 Periodic check found CONGRATS modal:', modalCheck.className);
       injectShareButton();
     }
+
+    // Also check if toolbar exists but button hasn't been injected yet
+    if (!document.getElementById('mini-stealer-toolbar-button')) {
+      const toolbar = document.querySelector('.xwd__toolbar--tools');
+      if (toolbar) {
+        injectToolbarButton();
+      }
+    }
   }
 });
 
@@ -435,6 +523,16 @@ document.addEventListener('visibilitychange', () => {
     }
   }
 });
+
+// Try to inject toolbar button on page load
+setTimeout(() => {
+  injectToolbarButton();
+}, 1000);
+
+// Also try again after a delay in case toolbar loads slowly
+setTimeout(() => {
+  injectToolbarButton();
+}, 3000);
 
 // Log for debugging
 console.log('✨ Mini Stealer ready - complete the puzzle to share!');
