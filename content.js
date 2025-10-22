@@ -217,7 +217,7 @@ function generateShareLink(puzzleData) {
   console.log('🔗 URL encoded length:', urlEncoded.length);
   console.log('➖ With dashes length:', withDashes.length);
 
-  return `https://mini-stealer.surge.sh?data=${withDashes}`;
+  return `https://mini.neelr.dev?data=${withDashes}`;
 }
 
 // Function to inject button into completion modal
