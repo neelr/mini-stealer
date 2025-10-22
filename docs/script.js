@@ -178,6 +178,14 @@ class CrosswordGame {
         document.getElementById('reveal-btn').addEventListener('click', () => this.revealAnswers());
         document.getElementById('clear-btn').addEventListener('click', () => this.clearGrid());
         document.getElementById('share-btn').addEventListener('click', () => this.share());
+
+        // Add close modal functionality
+        const closeModal = document.getElementById('close-modal');
+        if (closeModal) {
+            closeModal.addEventListener('click', () => {
+                document.getElementById('completion-modal').classList.remove('show');
+            });
+        }
         document.getElementById('start-timer-btn').addEventListener('click', () => this.startGame());
     }
 

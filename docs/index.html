@@ -9,13 +9,13 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Mini Stealer">
     <meta property="og:description" content="Play a NYT Mini-style crossword puzzle and share your time!">
-    <meta property="og:image" content="cover.png">
+    <meta property="og:image" content="https://mini-stealer.surge.sh/cover.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:title" content="Mini Stealer">
     <meta property="twitter:description" content="Play a NYT Mini-style crossword puzzle and share your time!">
-    <meta property="twitter:image" content="cover.png">
+    <meta property="twitter:image" content="https://mini-stealer.surge.sh/cover.png">
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -71,6 +71,7 @@
     <!-- Completion Modal -->
     <div class="modal" id="completion-modal">
         <div class="modal-content">
+            <button class="modal-close" id="close-modal">&times;</button>
             <h2>Congratulations</h2>
             <p>You solved the puzzle in <span id="final-time"></span>!</p>
             <textarea id="share-text" rows="3" style="width: 100%; margin: 16px 0; padding: 12px; font-family: Georgia, serif; font-size: 14px; resize: none; border: 1px solid #ccc; border-radius: 6px; background: #fff; line-height: 1.5;"></textarea>
