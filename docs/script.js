@@ -299,7 +299,7 @@ class CrosswordGame {
                 break;
             case 'Tab':
                 e.preventDefault();
-                this.toggleDirection();
+                this.handleTabNavigation();
                 break;
             case 'Backspace':
                 if (!e.target.value && this.selectedWord) {
@@ -386,6 +386,53 @@ class CrosswordGame {
         this.selectedDirection = 1 - this.selectedDirection;
         if (this.selectedCell) {
             this.selectCell(this.selectedCell.x, this.selectedCell.y);
+        }
+    }
+
+    handleTabNavigation() {
+        if (!this.selectedCell) return;
+
+        // determine current word and direction
+        let currentWord = this.selectedWord;
+        let currentDir = null;
+        
+        if (currentWord) {
+            const [_, __, ___, wordDir] = currentWord;
+            currentDir = wordDir;
+        } 
+        
+        // get all words in the current direction, sorted by clue number
+        const wordsInDirection = this.data.words
+            .filter(word => word[3] === currentDir)
+            .sort((a, b) => a[0] - b[0]); // sort by clue number
+
+        let nextWord = null;
+
+        if (currentWord) {
+            // find the current word's index in the sorted list
+            const currentNumber = currentWord[0];
+            const currentIndex = wordsInDirection.findIndex(word => word[0] === currentNumber);
+            
+            if (currentIndex >= 0 && currentIndex < wordsInDirection.length - 1) {
+                // move to next word in same direction 😎
+                nextWord = wordsInDirection[currentIndex + 1];
+            } else {
+                // at end of current direction, switch to other direction 
+                const otherDir = 1 - currentDir;
+                const wordsInOtherDirection = this.data.words
+                    .filter(word => word[3] === otherDir)
+                    .sort((a, b) => a[0] - b[0]);
+                
+                if (wordsInOtherDirection.length > 0) {
+                    nextWord = wordsInOtherDirection[0]; // first word in other direction 
+                    this.selectedDirection = otherDir;
+                }
+            }
+        }
+
+        if (nextWord) {
+            const [_, nextX, nextY] = nextWord;
+            this.selectCell(nextX, nextY);
         }
     }
 
