@@ -607,6 +607,12 @@ class CrosswordGame {
     startGame() {
         document.getElementById('start-modal').classList.remove('show');
         this.startTimer();
+        // refocus grid input so typing works immediately
+        if (this.selectedCell) {
+            this.selectCell(this.selectedCell.x, this.selectedCell.y);
+        } else {
+            this.selectInitialAcrossWord();
+        }
     }
 }
 
