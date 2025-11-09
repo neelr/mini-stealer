@@ -20,6 +20,7 @@ class CrosswordGame {
         this.renderGrid();
         this.renderClues();
         this.attachEventListeners();
+		this.selectInitialAcrossWord();
     }
 
     setupGrid() {
@@ -187,7 +188,28 @@ class CrosswordGame {
             });
         }
         document.getElementById('start-timer-btn').addEventListener('click', () => this.startGame());
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab') return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            this.handleTabNavigation();
+        }, true);
     }
+
+	selectInitialAcrossWord() {
+		// find the first across word (dir === 0) by smallest clue number
+		const acrossWords = this.data.words
+			.filter(w => w[3] === 0)
+			.sort((a, b) => a[0] - b[0]);
+
+		const firstAcross = acrossWords[0];
+		const [, x, y] = firstAcross;
+		this.selectedDirection = 0; // across
+		this.selectCell(x, y);
+	}
 
     selectCell(x, y) {
         if (this.grid[y][x] === '#') return;
